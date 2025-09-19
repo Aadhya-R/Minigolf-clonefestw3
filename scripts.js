@@ -12,6 +12,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHei
 
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.enablePan = false;
+orbit.enableZoom = false;
 orbit.minPolarAngle = 0.7;
 orbit.maxPolarAngle = 0.7;
 orbit.enableDamping = false;
@@ -33,9 +34,8 @@ const plane = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(plane);
 plane.rotation.x = -0.5 * Math.PI;
 
-ball.position.set(8, 0.5, 3);
-
-camera.position.set(ball.position.x - 5, 5, ball.position.z - 5);
+ball.position.set(0, 0.5, 0);
+camera.position.set(-5, 10, -5);
 
 const axesHelper = new THREE.AxesHelper(3);
 scene.add(axesHelper);
@@ -49,18 +49,15 @@ ball.name = "ball";
 
 function onClick(e) {
   const coords = new THREE.Vector2(
-    ((e.clientX/window.innerWidth) * 2 - 1),
+    (e.clientX/window.innerWidth) * 2 - 1,
     -(e.clientY/window.innerHeight) * 2 + 1
   );
   raycaster.setFromCamera(coords, camera);
   const intersections = raycaster.intersectObjects(scene.children, true);
   if (intersections.length > 0) {
-    console.log(intersections);
     const selectedObject = intersections[0].object;
     if (selectedObject.name === "ball") {
-      //selectedObject.position.set(Math.random()*10, 0.5, Math.random()*10);
       ballMove(selectedObject);
-      camera.position.set(ball.position.x - 5, 5, ball.position.z - 5);
     }
   }
 }
@@ -73,12 +70,8 @@ let temp = 0;
 
 function ballMove(ball) {
   temp = 1;
-  ball.lookAt(camera.position.x, 0.5, camera.position.z);
   const direction = new THREE.Vector3();
   ball.getWorldDirection(direction);
-  console.log(direction);
-  direction.x = -direction.x;
-  direction.z = -direction.z;
   const displacement = new THREE.Vector3();
   const offset = 5;
   displacement.copy(direction).multiplyScalar(offset);
@@ -95,17 +88,36 @@ function setTemp() {
   console.log(temp)
 }
 
-function animate() {
+function UpdateCamera(time) {
+  const direction = new THREE.Vector3();
+  ball.getWorldDirection(direction);
+  const displacement = new THREE.Vector3();
+  const offset = -5;
+  displacement.copy(direction).multiplyScalar(offset);
+  newpos = displacement.add(ball.position);
+  newpos.y = 10;
+  camera.position.copy(newpos);
+}
+
+function ballLookAt(time) {
+  ball.lookAt(camera.position.x, 0.5, camera.position.z);
+  ball.rotateY(Math.PI);
+}
+
+function animate(time) {
   requestAnimationFrame(animate);
   orbit.target = ball.position;
+  
   if (temp === 1) {
-    camera.position.set(ball.position.x - 5, 5, ball.position.z - 5);
+    UpdateCamera(time);
   }
+  else {
+    ballLookAt(time);
+  }
+  
   moveTween.update();
   orbit.update();
+  
   renderer.render(scene, camera);
 }
-//renderer.setAnimationLoop(animate);
 animate();
-
-console.log("Hello World")
