@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {Tween, Easing} from '@tweenjs/tween.js';
+//import {Tween, Easing} from '@tweenjs/tween.js';
 import {OrbitControls, ThreeMFLoader} from 'three/examples/jsm/Addons.js';
 
 const renderer = new THREE.WebGLRenderer();
@@ -57,7 +57,9 @@ function onClick(e) {
   if (intersections.length > 0) {
     const selectedObject = intersections[0].object;
     if (selectedObject.name === "ball") {
-      ballMove(selectedObject);
+      if (temp === 0) {
+        ballMove(selectedObject);
+      }
     }
   }
 }
@@ -67,25 +69,28 @@ let moveTween = new Tween(ball.position)
     .to(newpos, 1000)
 
 let temp = 0;
+let direction = new THREE.Vector3();
+let speed = 0;
+let friction = 0;
 
 function ballMove(ball) {
   temp = 1;
-  const direction = new THREE.Vector3();
   ball.getWorldDirection(direction);
-  const displacement = new THREE.Vector3();
-  const offset = 5;
-  displacement.copy(direction).multiplyScalar(offset);
-  newpos = displacement.add(ball.position);
-  moveTween = new Tween(ball.position)
-    .to(newpos, 1000)
-  moveTween.start();
-  moveTween.onComplete(setTemp)
-  console.log(temp)
+  speed = 0.5;
+  friction = 0.005;
 }
 
-function setTemp() {
-  temp = 0;
-  console.log(temp)
+function moveBall () {
+  const displacement = new THREE.Vector3();
+  displacement.copy(direction).multiplyScalar(speed);
+  displacement.add(ball.position);
+  ball.position.copy(displacement);
+  speed = speed - friction;
+  //console.log(speed);
+  if (speed <= 0) {
+    speed = 0;
+    temp = 0;
+  }
 }
 
 function UpdateCamera(time) {
@@ -110,12 +115,12 @@ function animate(time) {
   
   if (temp === 1) {
     UpdateCamera(time);
+    moveBall();
   }
   else {
     ballLookAt(time);
   }
-  
-  moveTween.update();
+
   orbit.update();
   
   renderer.render(scene, camera);
