@@ -5,9 +5,22 @@
     <title>My first three.js app</title>
     <style>
       body { margin: 0; }
+      /**CSS for scorecard**/
+      #scorecard {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        padding: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        font-family: monospace;
+        font-size: 24px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
+    <div id="scorecard">Strokes: 0</div>
     <script type="module" src="./scripts.js"></script>
   </body>
 </html>
