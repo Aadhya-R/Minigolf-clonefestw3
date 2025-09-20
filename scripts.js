@@ -223,6 +223,7 @@ let direction = new THREE.Vector3();
 let speed = 0;
 let friction = 0;
 let strokeCount = 0; //for stroke counting
+let isGameOver = false; // To track if the game is over
 
 function ballMove(power) {
   temp = 1;
@@ -283,9 +284,11 @@ function moveBall () {
   //console.log(speed);
   if (speed <= 0) {
     speed = 0;
-    temp = 0;
+    
+    if(!isGameOver){
+      temp = 0;
   }
-}
+}}
 
 function UpdateCamera() {
   const direction = new THREE.Vector3();
@@ -321,14 +324,21 @@ function animate() {
   if (distanceToHole < 0.7 && speed < 0.01) {
     speed = 0;
     ball.position.copy(hole.position);
-    alert(`You finished in ${strokeCount} strokes!`);
-    // Reset for the next level (or stop the game)
-    ball.position.set(0, 0.5, 7); // Move ball back to start
-    ball.lookAt(0,0.5,0);
-    UpdateCamera();
-    strokeCount = 0;
-    document.getElementById('scorecard').innerText = `Strokes: ${strokeCount}`;
-  }
+    // Show modal instead of alert
+document.getElementById("winText").innerText = `You finished in ${strokeCount} strokes!`;
+document.getElementById("winModal").style.display = "flex";
+
+// Reset when closing modal
+document.getElementById("closeModal").onclick = () => {
+  document.getElementById("winModal").style.display = "none";
+
+  // Reset game
+  ball.position.set(0, 0.5, 7);
+  ball.lookAt(0,0.5,0);
+  UpdateCamera();
+  strokeCount = 0;
+  document.getElementById('scorecard').innerText = `Strokes: ${strokeCount}`;
+}};
 
   orbit.update();
   renderer.render(scene, camera);

@@ -4,53 +4,42 @@
     <meta charset="utf-8">
     <title>My Mini-Golf Game</title>
     <style>
-      body { margin: 0; font-family: monospace; }
-
-      /* Scorecard Style */
+      body { margin: 0; font-family: monospace; overflow: hidden; }
+      canvas { display: block; }
       #scorecard {
-        position: absolute;
-        top: 10px;
-        right: 10px; /* Moved to the right */
-        padding: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: white;
-        font-size: 24px;
-        border-radius: 5px;
+        position: absolute; top: 10px; right: 10px; padding: 10px;
+        background-color: rgba(0, 0, 0, 0.5); color: white;
+        font-size: 24px; border-radius: 5px;
       }
-
-      /* New Instructions Box Style */
       #instructions {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        padding: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: white;
-        font-size: 16px;
-        border-radius: 5px;
-        width: 200px; /* Gave it a set width */
+        position: absolute; top: 10px; left: 10px; padding: 10px;
+        background-color: rgba(0, 0, 0, 0.5); color: white;
+        font-size: 16px; border-radius: 5px; width: 200px;
       }
-
-      #instructions h3 {
-        margin-top: 0;
-        margin-bottom: 10px;
+      #instructions h3 { margin-top: 0; margin-bottom: 10px; }
+      #instructions p { margin: 0; }
+      #winModal {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.7); display: none;
+        justify-content: center; align-items: center; text-align: center;
       }
-
-      #instructions p {
-        margin: 0;
-      }
-
+      #winModalContent { padding: 40px; background-color: white; border-radius: 10px; }
+      #closeModal { margin-top: 20px; padding: 10px 20px; cursor: pointer; }
     </style>
   </head>
   <body>
     <div id="scorecard">Strokes: 0</div>
-
     <div id="instructions">
         <h3>How to Play</h3>
-        <p>1. Click and HOLD the ball to charge your shot.</p>
-        <p>2. RELEASE the mouse button to hit the ball.</p>
+        <p>1. Click and HOLD the ball.</p>
+        <p>2. RELEASE to hit.</p>
     </div>
-
+    <div id="winModal">
+      <div id="winModalContent">
+        <h2 id="winText">You won!</h2>
+        <button id="closeModal">Play Again</button>
+      </div>
+    </div>
     <script type="module" src="./scripts.js"></script>
   </body>
 </html>
