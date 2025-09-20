@@ -118,24 +118,83 @@ camera.position.set(-5, 10, -5);
 renderer.setClearColor(0x87CEEB);
 
 const raycaster = new THREE.Raycaster();
-document.addEventListener('mousedown', onClick);
+
+// Power meter variables
+let powerMeter = { isCharging: false, startTime: 0, maxPower: 0.5, minPower: 0.1 };
+const powerMeterElement = document.createElement('div');
+powerMeterElement.style.position = 'absolute';
+powerMeterElement.style.bottom = '20px';
+powerMeterElement.style.left = '50%';
+powerMeterElement.style.transform = 'translateX(-50%)';
+powerMeterElement.style.width = '200px';
+powerMeterElement.style.height = '30px';
+powerMeterElement.style.backgroundColor = 'rgba(0,0,0,0.5)';
+powerMeterElement.style.borderRadius = '15px';
+powerMeterElement.style.overflow = 'hidden';
+powerMeterElement.style.display = 'none';
+
+document.body.appendChild(powerMeterElement);
+
+const powerMeterFill = document.createElement('div');
+powerMeterFill.style.height = '100%';
+powerMeterFill.style.width = '0%';
+powerMeterFill.style.backgroundColor = '#4CAF50';
+powerMeterFill.style.transition = 'width 0.1s';
+powerMeterElement.appendChild(powerMeterFill);
 
 ball.name = "ball";
 
-function onClick(e) {
-  const coords = new THREE.Vector2(
-    (e.clientX/window.innerWidth) * 2 - 1,
-    -(e.clientY/window.innerHeight) * 2 + 1
-  );
-  raycaster.setFromCamera(coords, camera);
-  const intersections = raycaster.intersectObjects(scene.children, true);
-  if (intersections.length > 0) {
-    const selectedObject = intersections[0].object;
-    if (selectedObject.name === "ball") {
-      if (temp === 0) {
-        ballMove(selectedObject);
-      }
-    }
+// Mouse down event
+document.addEventListener('mousedown', onBallMouseDown);
+
+// Mouse up event
+document.addEventListener('mouseup', onMouseUp);
+
+// Mouse leave event
+document.addEventListener('mouseleave', onMouseUp);
+
+function onBallMouseDown(e) {
+  if (temp === 0) {
+    e.stopPropagation();
+    powerMeter.isCharging = true;
+    powerMeter.startTime = Date.now();
+    powerMeterElement.style.display = 'block';
+    updatePowerMeter();
+  }
+}
+
+function onMouseUp(e) {
+  if (powerMeter.isCharging) {
+    powerMeter.isCharging = false;
+    const holdTime = Date.now() - powerMeter.startTime;
+    // Cap the hold time to 1 second for max power
+    const power = Math.min(holdTime / 1000, 1) * (powerMeter.maxPower - powerMeter.minPower) + powerMeter.minPower;
+    ballMove(power);
+    powerMeterElement.style.display = 'none';
+    powerMeterFill.style.width = '0%';
+  }
+}
+
+function updatePowerMeter() {
+  if (!powerMeter.isCharging) return;
+  
+  const elapsed = Date.now() - powerMeter.startTime;
+  const progress = Math.min(elapsed / 1000, 1); // Cap at 1 second for max power
+  const power = progress * 100;
+  
+  // Change color based on power level
+  if (progress < 0.5) {
+    powerMeterFill.style.backgroundColor = '#4CAF50'; // Green
+  } else if (progress < 0.8) {
+    powerMeterFill.style.backgroundColor = '#FFC107'; // Yellow
+  } else {
+    powerMeterFill.style.backgroundColor = '#F44336'; // Red
+  }
+  
+  powerMeterFill.style.width = `${power}%`;
+  
+  if (powerMeter.isCharging) {
+    requestAnimationFrame(updatePowerMeter);
   }
 }
 
@@ -147,16 +206,17 @@ let speed = 0;
 let friction = 0;
 let strokeCount = 0; //for stroke counting
 
-function ballMove(ball) {
+function ballMove(power) {
   temp = 1;
   ball.getWorldDirection(direction);
-  speed = 0.3;
-  friction = 0.005;
+  speed = power; // Use the calculated power for speed
+  friction = 0.01; // Increased friction for better control
 
   //for the strokes
   strokeCount++;
   document.getElementById('scorecard').innerText = `Strokes: ${strokeCount}`;
 }
+
 //collision detection and response
 //collision detection and response
 function checkCollisions() {
