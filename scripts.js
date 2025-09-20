@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import {Tween, Easing} from '@tweenjs/tween.js';
 import {OrbitControls, ThreeMFLoader} from 'three/examples/jsm/Addons.js';
 
 const renderer = new THREE.WebGLRenderer();
@@ -97,11 +96,12 @@ flagGroup.add(flag);
 flagGroup.position.copy(holePosition);
 scene.add(flagGroup);
 
-ball.position.set(0, 0.5, 0);
+ball.position.set(0, 0.5, 7);
+ball.lookAt(0,0.5,0);
 camera.position.set(-5, 10, -5);
 
-const axesHelper = new THREE.AxesHelper(3);
-scene.add(axesHelper);
+//const axesHelper = new THREE.AxesHelper(3);
+//scene.add(axesHelper);
 
 renderer.setClearColor(0x87CEEB);
 
@@ -128,8 +128,6 @@ function onClick(e) {
 }
 
 let newpos = new THREE.Vector3();
-let moveTween = new Tween(ball.position)
-    .to(newpos, 1000)
 
 let temp = 0;
 let direction = new THREE.Vector3();
@@ -140,7 +138,7 @@ let strokeCount = 0; //for stroke counting
 function ballMove(ball) {
   temp = 1;
   ball.getWorldDirection(direction);
-  speed = 0.5;
+  speed = 0.3;
   friction = 0.005;
 
   //for the strokes
@@ -184,6 +182,7 @@ function checkCollisions() {
         }
     }
 }
+
 function moveBall () {
   checkCollisions();
   const displacement = new THREE.Vector3();
@@ -198,7 +197,7 @@ function moveBall () {
   }
 }
 
-function UpdateCamera(time) {
+function UpdateCamera() {
   const direction = new THREE.Vector3();
   ball.getWorldDirection(direction);
   const displacement = new THREE.Vector3();
@@ -209,27 +208,33 @@ function UpdateCamera(time) {
   camera.position.copy(newpos);
 }
 
-function ballLookAt(time) {
+function ballLookAt() {
   ball.lookAt(camera.position.x, 0.5, camera.position.z);
   ball.rotateY(Math.PI);
 }
 
-function animate(time) {
+UpdateCamera();
+
+function animate() {
   requestAnimationFrame(animate);
   orbit.target = ball.position;
 
   if (temp === 1) {
     moveBall();
+    UpdateCamera();
   } else {
-    ballLookAt(time);
+    ballLookAt();
   }
 
   // Add this win condition check
   const distanceToHole = ball.position.distanceTo(holePosition);
-  if (distanceToHole < 0.5 && speed < 0.01 && temp === 0) {
+  if (distanceToHole < 0.9 && speed < 0.1) {
+    speed = 0;
     alert(`You finished in ${strokeCount} strokes!`);
     // Reset for the next level (or stop the game)
-    ball.position.set(0, 0.5, 0); // Move ball back to start
+    ball.position.set(0, 0.5, 7); // Move ball back to start
+    ball.lookAt(0,0.5,0);
+    UpdateCamera();
     strokeCount = 0;
     document.getElementById('scorecard').innerText = `Strokes: ${strokeCount}`;
   }
