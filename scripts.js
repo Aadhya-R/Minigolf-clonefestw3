@@ -118,6 +118,7 @@ camera.position.set(-5, 10, -5);
 renderer.setClearColor(0x87CEEB);
 
 const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 // Power meter variables
 let powerMeter = { isCharging: false, startTime: 0, maxPower: 0.5, minPower: 0.1 };
@@ -155,11 +156,26 @@ document.addEventListener('mouseleave', onMouseUp);
 
 function onBallMouseDown(e) {
   if (temp === 0) {
-    e.stopPropagation();
-    powerMeter.isCharging = true;
-    powerMeter.startTime = Date.now();
-    powerMeterElement.style.display = 'block';
-    updatePowerMeter();
+    // compute mouse position in normalized device coordinates
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+    // update the picking ray with the camera and mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // calculate objects intersecting the picking ray
+    const intersects = raycaster.intersectObject(ball, false);
+
+    if (intersects.length > 0) {
+      e.stopPropagation();
+      powerMeter.isCharging = true;
+      powerMeter.startTime = Date.now();
+      powerMeterElement.style.display = 'block';
+      // disable orbit controls while charging to prevent accidental camera movement
+      if (orbit) orbit.enabled = false;
+      updatePowerMeter();
+    }
   }
 }
 
@@ -172,6 +188,8 @@ function onMouseUp(e) {
     ballMove(power);
     powerMeterElement.style.display = 'none';
     powerMeterFill.style.width = '0%';
+    // re-enable orbit controls after charging
+    if (orbit) orbit.enabled = true;
   }
 }
 
