@@ -22,16 +22,13 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
 scene.add(directionalLight);
 
-const grassTexture = new THREE.TextureLoader().load('./assets/GolfGrass.jpg');
-const woodTexture = new THREE.TextureLoader().load('./assets/Wood.avif');
+const grassTexture = new THREE.TextureLoader().load('https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/GolfGrass.jpg');
+const woodTexture = new THREE.TextureLoader().load('https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/Wood.avif');
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 scene.background = cubeTextureLoader.load([
-  './assets/PixelSky.png',
-  './assets/PixelSky.png',
-  './assets/PixelSky.png',
-  './assets/PixelSky.png',
-  './assets/PixelSky.png',
-  './assets/PixelSky.png'
+  'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
+  'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
+  'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
 ]);
 
 const ballGeometry = new THREE.SphereGeometry(0.5);
