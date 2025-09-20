@@ -29,6 +29,9 @@ scene.background = cubeTextureLoader.load([
   'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
   'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
   'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
+  'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
+  'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png',
+  'https://swoopzhgodl5fxdx.public.blob.vercel-storage.com/PixelSky.png'
 ]);
 
 const ballGeometry = new THREE.SphereGeometry(0.5);
