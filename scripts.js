@@ -83,7 +83,7 @@ wallProperties.forEach(props => {
 const holePosition = new THREE.Vector3(12, 0.1, -8); // Set the hole's location
 
 // The Hole
-const holeGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.2, 32);
+const holeGeometry = new THREE.CylinderGeometry(0.7, 0.7, 0.2, 32);
 const holeMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
 const hole = new THREE.Mesh(holeGeometry, holeMaterial);
 hole.position.copy(holePosition);
@@ -318,7 +318,7 @@ function animate() {
 
   // Add this win condition check
   const distanceToHole = ball.position.distanceTo(holePosition);
-  if (distanceToHole < 0.9 && speed < 0.1) {
+  if (distanceToHole < 0.7 && speed < 0.01) {
     speed = 0;
     ball.position.copy(hole.position);
     alert(`You finished in ${strokeCount} strokes!`);
@@ -334,3 +334,9 @@ function animate() {
   renderer.render(scene, camera);
 }
 animate();
+
+window.addEventListener('resize', function() {
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(this.window.innerWidth, this.window.innerHeight);
+});
