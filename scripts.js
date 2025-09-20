@@ -22,6 +22,18 @@ scene.add(ambientLight);
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1.5);
 scene.add(directionalLight);
 
+const grassTexture = new THREE.TextureLoader().load('./assets/GolfGrass.jpg');
+const woodTexture = new THREE.TextureLoader().load('./assets/Wood.avif');
+const cubeTextureLoader = new THREE.CubeTextureLoader();
+scene.background = cubeTextureLoader.load([
+  './assets/PixelSky.png',
+  './assets/PixelSky.png',
+  './assets/PixelSky.png',
+  './assets/PixelSky.png',
+  './assets/PixelSky.png',
+  './assets/PixelSky.png'
+]);
+
 const ballGeometry = new THREE.SphereGeometry(0.5);
 const ballMaterial = new THREE.MeshStandardMaterial({color: 0xFFFFFF});
 const ball = new THREE.Mesh(ballGeometry, ballMaterial);
@@ -29,8 +41,8 @@ scene.add(ball);
 
 //new shape edit 
 //boundary of the golf course
-const floorMaterial = new THREE.MeshStandardMaterial({color: 0x00C400, side: THREE.DoubleSide});
-const wallMaterial = new THREE.MeshStandardMaterial({color: 0x8B4513}); // A brown color
+const floorMaterial = new THREE.MeshStandardMaterial({color: 0x00C400, map: grassTexture, side: THREE.DoubleSide});
+const wallMaterial = new THREE.MeshStandardMaterial({color: 0x9A7B4F, map: woodTexture}); // A brown color
 
 // L-shaped floor made of two parts
 const floorGeometry1 = new THREE.BoxGeometry(10, 0.2, 20);
@@ -230,6 +242,7 @@ function animate() {
   const distanceToHole = ball.position.distanceTo(holePosition);
   if (distanceToHole < 0.9 && speed < 0.1) {
     speed = 0;
+    ball.position.copy(hole.position);
     alert(`You finished in ${strokeCount} strokes!`);
     // Reset for the next level (or stop the game)
     ball.position.set(0, 0.5, 7); // Move ball back to start
